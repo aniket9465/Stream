@@ -20,4 +20,5 @@ app_name='summer_assgn'
 urlpatterns = [
     path('steam/', include('steam.urls')),
     path('',views.home),
+    path('admin/',admin.site.urls),
 ]

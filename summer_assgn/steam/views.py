@@ -1,5 +1,5 @@
 from django.contrib.auth import views,login, authenticate
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 def signup(request):
@@ -12,15 +12,20 @@ def signup(request):
             user = authenticate(username=username, password=raw_password)
             user.is_active=False
             user.save()
-            return HttpResponse(authenticate(username=username, password=raw_password))
+            return redirect(home)
     else:
         form = UserCreationForm()
     return render(request, 'steam/signup.html', {'form': form})
-def adminlogin(request):
-    return HttpResponse("still left")
 
 def home(request):
     return render(request,'steam/home.html')
 
 def login(request):
-    return HttpResponse("still left")
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            return redirect(home)
+    else:
+        form = AuthenticationForm()
+    return render(request, 'steam/login.html', {'form': form})
+ 
