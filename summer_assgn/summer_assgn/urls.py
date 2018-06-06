@@ -15,8 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from steam import views
+app_name='summer_assgn'
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('steam/', include('steam.urls'))
+    path('steam/', include('steam.urls')),
+    path('',views.home),
 ]
