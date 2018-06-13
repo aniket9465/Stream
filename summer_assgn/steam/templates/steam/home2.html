@@ -23,6 +23,6 @@ a
 	<a href="{% url 'steam:home' %}"><button>Become Host</button></a>
 	{% if request.user.is_staff == True %}
 	<br>
-	<a href="{% url 'steam:home' %}"><button>Admin page</button></a>
+	<a href="http://127.0.0.1:3000/adminpage"><button>Admin page</button></a>
 	{% endif %}
 </div>
