@@ -38,7 +38,7 @@ def login(request):
             user = authenticate(username=username, password=raw_password)
             loginu(request,user)
             request.session['username']=username
-            return home2(request)
+            return redirect('steam:home2')
     else:
         form = AuthenticationForm()
     return render(request, 'steam/login.html', {'form': form})
@@ -53,4 +53,25 @@ def adminpageapi(request):
     s=SessionStore(session_key=ssid)
     print(s['username'])
     serializer=userserializer(User.objects.all().filter(~Q(username=s['username'])),many=True)
+    print(serializer.data)
     return JsonResponse(serializer.data,safe=False)
+
+@method_decorator(csrf_exempt)
+def approveuserapi(request):
+    j=json.loads(request.body)
+    uname=j['uname']
+    user=User.objects.get(username=uname)
+    user.is_active=True
+    user.save()
+    print(user)
+    return HttpResponse('')
+
+@method_decorator(csrf_exempt)
+def deleteuserapi(request):
+    j=json.loads(request.body)
+    uname=j['uname']
+    user=User.objects.get(username=uname)
+    user.delete()
+    print("hi")
+    return HttpResponse('')
+
