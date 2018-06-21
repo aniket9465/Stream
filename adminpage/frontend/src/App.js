@@ -7,8 +7,11 @@ class App extends Component {
   render() {
     return ( 
       <Router>
+     <div>
       <Route exact path="/adminpage" component={adminpage}/>
-      </Router>  
+      <Route exact path="/becomehost" component={becomehost}/>
+     </div> 
+     </Router>  
     );
   }
 }
@@ -146,5 +149,65 @@ class adminpage extends Component
 }
 
 
+class becomehost extends Component
+{
+    constructor(props)
+    {
+	    super(props);
+	    var tthis=this;
+	    window.onbeforeunload=function(e){tthis.componentWillUnmount();};
+            window.onunload=function(e){tthis.componentWillUnmount();};
+
+    }
+    componentDidMount()
+    {
+     var myData={
+                         sessionid:getCookie('sessionid')
+                        };
+             
+     fetch('http://127.0.0.1:8000/steam/makehost/',
+                             {
+                                   method: "post",
+                                   credentials: "same-origin",
+                                   headers: {
+                                                 "X-CSRFToken": getCookie("csrftoken"),
+                                                 "Accept": "application/json",
+                                                 "Content-Type": "application/json"
+                                            },
+                                   body: JSON.stringify(myData)
+                              }
+                   );
+ 
+    }
+   componentWillUnmount()
+    {
+     var myData={        
+                         sessionid:getCookie('sessionid')
+                        };
+             
+     fetch('http://127.0.0.1:8000/steam/removehost/',
+                             {
+                                   method: "post",
+                                   credentials: "same-origin",
+                                   headers: {
+                                                 "X-CSRFToken": getCookie("csrftoken"),
+                                                 "Accept": "application/json",
+                                                 "Content-Type": "application/json"
+                                            },
+                                   body: JSON.stringify(myData)
+                              }
+                   );
+
+    }
+ 
+    render()
+    {
+	    return (
+			    <p>
+			    you are a host now . if you close this window you will no longer remain a host .
+			    </p>
+			    );
+    }
+}
 
 export default App;

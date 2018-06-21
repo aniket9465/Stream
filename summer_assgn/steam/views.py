@@ -2,6 +2,7 @@ from django.contrib.auth import views,login as loginu, authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.shortcuts import render, redirect
+from steam.models import hosts
 from django.http import HttpResponse,JsonResponse
 from steam.serializers import userserializer
 from django.db.models import Q
@@ -75,3 +76,21 @@ def deleteuserapi(request):
     print("hi")
     return HttpResponse('')
 
+@method_decorator(csrf_exempt)
+def makehost(request):
+    j=json.loads(request.body);
+    ssid=j['sessionid']
+    s=SessionStore(session_key=ssid)
+    h1=hosts(uname=s['username'])
+    h1.save()
+    return HttpResponse('')
+
+@method_decorator(csrf_exempt)
+def removehost(request):
+    j=json.loads(request.body);
+    ssid=j['sessionid']
+    s=SessionStore(session_key=ssid)
+    h1=hosts.objects.get(uname=s['username'])
+    h1.delete()
+    return HttpResponse('')
+                              

@@ -9,4 +9,6 @@ urlpatterns=[
         path('adminpageapi/',adminpageapi,name='adminpageapi'),
         path('approveuserapi/',approveuserapi,name='approveuserapi'),
         path('deleteuserapi/',deleteuserapi,name='deleteuserapi'),
+        path('makehost/',makehost,name='makehost'),
+        path('removehost/',removehost,name='removehost'),
         ]

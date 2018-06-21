@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'steam',
+    'channels',
     'corsheaders',
 ]
 CORS_ORIGIN_ALLOW_ALL=True;
@@ -74,7 +75,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'summer_assgn.wsgi.application'
-
+ASGI_APPLICATION = 'summer_assgn.routing.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
