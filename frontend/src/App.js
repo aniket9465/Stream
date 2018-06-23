@@ -53,7 +53,7 @@ class adminpage extends Component
              var myData={
                          sessionid:getCookie('sessionid')
                         };
-	     fetch('http://127.0.0.1:8000/steam/adminpageapi/',
+	     fetch('http://127.0.0.1:8000/stream/adminpageapi/',
                              {
                                    method: "post",
                                    credentials: "same-origin",
@@ -78,7 +78,7 @@ class adminpage extends Component
                          uname:uname
                         };
 
-              fetch('http://127.0.0.1:8000/steam/deleteuserapi/',
+              fetch('http://127.0.0.1:8000/stream/deleteuserapi/',
                              {
                                    method: "post",
                                    credentials: "same-origin",
@@ -103,7 +103,7 @@ class adminpage extends Component
                          uname:uname
                         };
 
-             fetch('http://127.0.0.1:8000/steam/approveuserapi/',
+             fetch('http://127.0.0.1:8000/stream/approveuserapi/',
                              {
                                    method: "post",
                                    credentials: "same-origin",
@@ -175,7 +175,7 @@ class becomehost extends Component
                          sessionid:getCookie("sessionid")
                         };
             console.log(myData); 
-     fetch('http://127.0.0.1:8000/steam/makehost/',
+     fetch('http://127.0.0.1:8000/stream/makehost/',
                              {
                                    method: "post",
                                    credentials: "same-origin",
@@ -194,7 +194,7 @@ class becomehost extends Component
      var myData={        
                          sessionid:getCookie('sessionid')
                         };
-     fetch('http://127.0.0.1:8000/steam/removehost/',
+     fetch('http://127.0.0.1:8000/stream/removehost/',
                              {
                                    method: "post",
                                    credentials: "same-origin",
@@ -239,7 +239,7 @@ class onlinehosts extends Component
              var myData={
                          sessionid:getCookie('sessionid')
                         };
-             fetch('http://127.0.0.1:8000/steam/onlineusersapi/',
+             fetch('http://127.0.0.1:8000/stream/onlineusersapi/',
                              {
                                    method: "post",
                                    credentials: "same-origin",
@@ -271,7 +271,7 @@ class onlinehosts extends Component
 				
 				<p>
 				<div style={hdiv}>
-			        <Websocket url="ws://127.0.0.1:8000/steam/onlinehosts/" 
+			        <Websocket url="ws://127.0.0.1:8000/stream/onlinehosts/" 
 				onMessage={(data)=> {this.handledata(data)}}/>
 				</div>
 				{list1}

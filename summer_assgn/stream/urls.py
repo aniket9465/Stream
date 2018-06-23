@@ -1,6 +1,6 @@
 from django.urls import path
-from steam.views import *
-app_name= 'steam'
+from stream.views import *
+app_name= 'stream'
 urlpatterns=[
         path('signup/',signup,name='signup'),
         path('home/',home,name='home'),

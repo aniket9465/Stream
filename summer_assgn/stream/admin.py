@@ -1,4 +1,4 @@
 from django.contrib import admin
-from steam.models import hosts
+from stream.models import hosts
 # Register your models here.
 admin.site.register(hosts)

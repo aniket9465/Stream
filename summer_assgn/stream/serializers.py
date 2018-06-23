@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from  steam.models import hosts
+from  stream.models import hosts
 class userserializer(serializers.ModelSerializer):
     class Meta:
         model=User

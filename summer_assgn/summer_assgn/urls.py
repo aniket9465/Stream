@@ -15,10 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from steam import views
+from stream import views
 app_name='summer_assgn'
 urlpatterns = [
-    path('steam/', include('steam.urls')),
+    path('stream/', include('stream.urls')),
     path('',views.home),
     path('admin/',admin.site.urls),
 ]

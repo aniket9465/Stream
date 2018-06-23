@@ -1,10 +1,10 @@
 from channels.routing import ProtocolTypeRouter,URLRouter
 from channels.auth import AuthMiddlewareStack
-import steam.routing
+import stream.routing
 application= ProtocolTypeRouter({
     'websocket':AuthMiddlewareStack(
         URLRouter(
-            steam.routing.websocket_urlpatterns
+            stream.routing.websocket_urlpatterns
             )
         ),
     })
