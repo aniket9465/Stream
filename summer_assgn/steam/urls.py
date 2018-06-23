@@ -11,4 +11,6 @@ urlpatterns=[
         path('deleteuserapi/',deleteuserapi,name='deleteuserapi'),
         path('makehost/',makehost,name='makehost'),
         path('removehost/',removehost,name='removehost'),
+        path('onlineusersapi/',onlineusersapi,name='onlineusersapi'),
+
         ]

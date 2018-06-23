@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.shortcuts import render, redirect
 from steam.models import hosts
 from django.http import HttpResponse,JsonResponse
-from steam.serializers import userserializer
+from steam.serializers import onlinehostsserializer,userserializer
 from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -12,6 +12,7 @@ import json
 from django.contrib.sessions.backends.db import SessionStore
 from inspect import getmembers
 from pprint import pprint
+from steam.models import hosts
 def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -39,6 +40,7 @@ def login(request):
             user = authenticate(username=username, password=raw_password)
             loginu(request,user)
             request.session['username']=username
+            print(request.session['username'])
             return redirect('steam:home2')
     else:
         form = AuthenticationForm()
@@ -81,8 +83,9 @@ def makehost(request):
     j=json.loads(request.body);
     ssid=j['sessionid']
     s=SessionStore(session_key=ssid)
-    h1=hosts(uname=s['username'])
-    h1.save()
+    if not hosts.objects.filter(uname=s['username']).exists() :
+        h1=hosts(uname=s['username'])
+        h1.save()
     return HttpResponse('')
 
 @method_decorator(csrf_exempt)
@@ -93,4 +96,10 @@ def removehost(request):
     h1=hosts.objects.get(uname=s['username'])
     h1.delete()
     return HttpResponse('')
-                              
+
+@method_decorator(csrf_exempt)
+def onlineusersapi(request):
+    serializer=onlinehostsserializer(hosts.objects.all(),many=True)
+    print(serializer.data)
+    return JsonResponse(serializer.data,safe=False)
+     
