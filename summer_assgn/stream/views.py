@@ -13,6 +13,8 @@ from django.contrib.sessions.backends.db import SessionStore
 from inspect import getmembers
 from pprint import pprint
 from stream.models import hosts
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -86,6 +88,9 @@ def makehost(request):
     if not hosts.objects.filter(uname=s['username']).exists() :
         h1=hosts(uname=s['username'])
         h1.save()
+        channel_layer=get_channel_layer()
+        print(channel_layer)
+        async_to_sync(channel_layer.group_send)("onlineuserrequest",{'type':'sendrefresh','text':"hello"})
     return HttpResponse('')
 
 @method_decorator(csrf_exempt)
@@ -95,6 +100,9 @@ def removehost(request):
     s=SessionStore(session_key=ssid)
     h1=hosts.objects.get(uname=s['username'])
     h1.delete()
+    channel_layer=get_channel_layer()
+    print(channel_layer)
+    async_to_sync(channel_layer.group_send)("onlineuserrequest",{'type':'sendrefresh','text':"hello"})
     return HttpResponse('')
 
 @method_decorator(csrf_exempt)

@@ -258,7 +258,8 @@ class onlinehosts extends Component
 	
 	handledata(data)
 	{
-                this.getusers();
+                console.log(data);
+		this.getusers();
 	}
 	render()
 	{
