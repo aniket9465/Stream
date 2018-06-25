@@ -164,13 +164,14 @@ class becomehost extends Component
 	    var tthis=this;
 	    window.onbeforeunload=function(e){tthis.componentWillUnmount();};
             window.onunload=function(e){tthis.componentWillUnmount();};
-
     }
     componentDidMount()
     {
 	    var a=getCookie('sessionid');
 	    console.log(a);
 	    console.log("whay");
+	    console.log(window.onbeforeunload);
+	    console.log(window.onunload);
      var myData={
                          sessionid:getCookie("sessionid")
                         };
@@ -191,21 +192,17 @@ class becomehost extends Component
     }
    componentWillUnmount()
     {
+	    window.location.reload();
+	    alert("wait");
      var myData={        
                          sessionid:getCookie('sessionid')
                         };
-     fetch('http://127.0.0.1:8000/stream/removehost/',
+      fetch('http://127.0.0.1:8000/stream/removehost/',
                              {
                                    method: "post",
-                                   credentials: "same-origin",
-                                   headers: {
-                                                 "X-CSRFToken": getCookie("csrftoken"),
-                                                 "Accept": "application/json",
-                                                 "Content-Type": "application/json"
-                                            },
                                    body: JSON.stringify(myData)
                               }
-                   );
+                   ).then();
 
     }
  
@@ -265,7 +262,7 @@ class onlinehosts extends Component
 	{
                 var list1=(Object.values(this.state.users)).map(
                                 (varia) => {
-                                return <button onClick={(e)=>this.approveuser(varia['uname'],e)}> {varia['uname']}</button>;
+                                return <button> {varia['uname']}</button>;
                                 });
 		var hdiv={ display:"none" };
 		return (

@@ -95,15 +95,22 @@ def makehost(request):
 
 @method_decorator(csrf_exempt)
 def removehost(request):
+    print("wtf")
     j=json.loads(request.body);
     ssid=j['sessionid']
     s=SessionStore(session_key=ssid)
-    h1=hosts.objects.get(uname=s['username'])
-    h1.delete()
-    channel_layer=get_channel_layer()
-    print(channel_layer)
-    async_to_sync(channel_layer.group_send)("onlineuserrequest",{'type':'sendrefresh','text':"hello"})
-    return HttpResponse('')
+    while True:
+        try:
+            h1=hosts.objects.get(uname=s['username'])
+            print(h1)
+            h1.delete()
+            channel_layer=get_channel_layer()
+            print(channel_layer)
+            async_to_sync(channel_layer.group_send)("onlineuserrequest",{'type':'sendrefresh','text':"hello"})
+            break;
+        except ValueError:
+            print(ValueError)
+    #return HttpResponse('')
 
 @method_decorator(csrf_exempt)
 def onlineusersapi(request):
