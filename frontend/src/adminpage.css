@@ -7,7 +7,7 @@ body
         align-items:center;
 
 }
-div
+.divv
 {
 	display : flex;
 	padding:3vmin;
@@ -30,4 +30,46 @@ button
 	border-style:solid;
 	border-radius:inherit;
         background-color:white;	
+}
+.search-bar{
+  margin: 20px;
+  text-align: center;
+}
+
+.search-bar input{
+  width: 75%;
+}
+
+.video-item img{
+  max-width: 64px;
+}
+
+.video-detail .details{
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.video-list
+{
+	display:flex;
+}
+.media-left
+{
+	padding:2vmin;
+
+}
+.media-body
+{
+
+	padding:2vmin;
+}
+.list-group-item{
+  cursor: pointer;
+  display:flex;
+  flex-direction:row;
+}
+
+.list-group-item:hover{
+  background-color: #eee;
 }

@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import './App.css';
+import YTSearch from 'youtube-api-search';
 import {BrowserRouter as Router,Route} from 'react-router-dom'
 import './adminpage.css';
+import VideoList from './video_list'
 import Websocket from 'react-websocket';
 class App extends Component {
   render() {
     return ( 
       <Router>
-     <p>
+     <div>
       <Route exact path="/adminpage" component={adminpage}/>
       <Route exact path="/becomehost" component={becomehost}/>
       <Route exact path="/onlinehosts" component={onlinehosts} />
-     </p> 
+     </div> 
      </Router>  
     );
   }
@@ -134,21 +136,21 @@ class adminpage extends Component
                                 }
                                         );	
 		return(
-		<p>
-		<div>Welcome to admin page</div>
-		<br/>
-		<div id="sdiv">
 		<div>
+		<div className="divv">Welcome to admin page</div>
+		<br/>
+		<div id="sdiv" className="divv">
+		<div className="divv">
 		<p>Approve these users</p>
 		{list1}
 		</div>
 		<br/>
-		<div>
+		<div className="divv">
 		<p>Delete these approved users </p>
                 {list2}
 		</div>
 		</div>
-		</p>
+		</div>
 		);
 	}
 
@@ -164,6 +166,7 @@ class becomehost extends Component
 	    var tthis=this;
 	    window.onbeforeunload=function(e){tthis.componentWillUnmount();};
             window.onunload=function(e){tthis.componentWillUnmount();};
+	 
     }
     componentDidMount()
     {
@@ -209,9 +212,9 @@ class becomehost extends Component
     render()
     {
 	    return (
-			    <p>
+			    <div>
 			    you are a host now . if you close this window you will no longer remain a host .
-			    </p>
+			    </div>
 			    );
     }
 }
@@ -223,10 +226,12 @@ class onlinehosts extends Component
                 super(props);
                 this.state={
                         users:[],
+			choice:"none",
                 };
                 this.getusers=this.getusers.bind(this);
 		this.handledata=this.handledata.bind(this);
                 this.getusers();
+		this.handleclick=this.handleclick.bind(this);
         }
 
 
@@ -249,7 +254,11 @@ class onlinehosts extends Component
                               }
                    ).then(response => response.json() )
                     .then(json => { console.log(json);
-                                    this.setState({users:json});
+			    console.log(this.state.choice);
+			            if(typeof json.find(item=>item.uname==this.state.choice)=='undefined')
+				    {console.log("set to none"); this.setState({users:json,choice:"none"});
+				    }else{console.log("why come here");
+					    this.setState({users:json});}
                                   });
         }
 	
@@ -258,23 +267,107 @@ class onlinehosts extends Component
                 console.log(data);
 		this.getusers();
 	}
+	handleclick(uname,e)
+	{
+		e.preventDefault();
+		console.log("ko");
+		this.setState({choice:uname});
+	}
 	render()
 	{
                 var list1=(Object.values(this.state.users)).map(
                                 (varia) => {
-                                return <button> {varia['uname']}</button>;
+                                return <button onClick={(e)=>{this.handleclick(varia['uname'],e)}}> {varia['uname']}</button>;
                                 });
 		var hdiv={ display:"none" };
-		return (
+		console.log(this.state.users.find(item=> item.uname==this.state.choice));
+		console.log(this.state.choice);
+		console.log(this.state.users);
+		if(typeof this.state.users.find(item=> item.uname==this.state.choice) == 'undefined')
+		{
+			return (
 				
-				<p>
-				<div style={hdiv}>
+				<div>
+				<div style={hdiv} >
 			        <Websocket url="ws://127.0.0.1:8000/stream/onlinehosts/" 
 				onMessage={(data)=> {this.handledata(data)}}/>
 				</div>
 				{list1}
-				</p>
+				</div>
 				);
+		}else
+		{
+			return (
+					<div className="divv">
+					<div style={hdiv} >
+                                <Websocket url="ws://127.0.0.1:8000/stream/onlinehosts/"
+                                onMessage={(data)=> {this.handledata(data)}}/>
+                                </div>
+			       <button onClick={(e)=>{e.preventDefault();this.setState({choice:"none"})}}>back</button>	
+					connected to {this.state.choice}
+					<br/><Youtubesearcher/>
+					</div>
+			       );
+		}
 	}
 }
+
+
+class Youtubesearcher extends Component
+{
+	constructor(props)
+	{
+		super(props);
+		this.state={
+			videos:[]
+		};
+		this.onInputChange=this.onInputChange.bind(this);
+		this.onInputChange("naruto");
+	}
+	onInputChange(strr)
+        {
+                YTSearch({key:"AIzaSyDSyUd2d2t_S6mHNtIQDvEjDeUyikhHumk",term:strr},
+                                (data)=> {console.log(data);this.setState({videos:data})}
+                                );
+        }
+	render()
+	{console.log(this.state.search);
+		return (
+		<div>
+		<SearchBar onSearchTermChange={searchTerm => this.onInputChange(searchTerm)}/> 
+		<VideoList videos={this.state.videos} onVideoSelect={userSelected=> console.log(userSelected)}/>
+		</div>
+		 );
+	}
+ 
+}
+
+
+class SearchBar extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = { term: '' };
+
+        this.onInputChange = this.onInputChange.bind(this);
+    }
+
+    onInputChange(event) {
+        this.setState({ term: event.target.value });
+        this.props.onSearchTermChange(event.target.value);
+    }
+
+    render(){
+        return (
+            <div className="search-bar">
+                <input                
+                    value={this.state.term}
+                    onChange={this.onInputChange} 
+                />               
+            </div>
+        );        
+    }
+
+}
+
+
 export default App;
