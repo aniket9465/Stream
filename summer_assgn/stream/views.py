@@ -110,11 +110,19 @@ def removehost(request):
             break;
         except ValueError:
             print(ValueError)
-    #return HttpResponse('')
+    return HttpResponse('')
 
 @method_decorator(csrf_exempt)
 def onlineusersapi(request):
     serializer=onlinehostsserializer(hosts.objects.all(),many=True)
     print(serializer.data)
     return JsonResponse(serializer.data,safe=False)
-     
+
+
+@method_decorator(csrf_exempt)
+def getusername(request):
+    j=json.loads(request.body);
+    ssid=j['sessionid']
+    s=SessionStore(session_key=ssid)
+    return JsonResponse({'username' : s['username']},safe=False)
+

@@ -166,7 +166,26 @@ class becomehost extends Component
 	    var tthis=this;
 	    window.onbeforeunload=function(e){tthis.componentWillUnmount();};
             window.onunload=function(e){tthis.componentWillUnmount();};
-	 
+            this.state={username:"none",selectedvideo:"none"};
+	    var myData={
+                         sessionid:getCookie('sessionid')
+                        };
+             fetch('http://127.0.0.1:8000/stream/getusername/',
+                             {
+                                   method: "post",
+                                   credentials: "same-origin",
+                                   headers: {
+                                                 "X-CSRFToken": getCookie("csrftoken"),
+                                                 "Accept": "application/json",
+                                                 "Content-Type": "application/json"
+                                            },
+                                   body: JSON.stringify(myData)
+                              }
+                   ).then(response => response.json() )
+                    .then(json => {  console.log(json);
+                                    this.setState({username:json['username']});
+                                  });
+   
     }
     componentDidMount()
     {
@@ -210,10 +229,24 @@ class becomehost extends Component
     }
  
     render()
-    {
+    {       var strr='ws://127.0.0.1:8000/stream/videoplayer/?'+this.state.username;
+	    var video;
+	    if(this.state.selectedvideo=="none")
+                        {       
+                                video="";
+                        }
+                        else
+                        {       
+                                video= <iframe src={'http://youtube.com/embed/'+this.state.selectedvideo+"?autoplay=1"}></iframe>}
+	    console.log(strr);
+	    console.log(this.state.username);
+	    if(this.state.username=="none")
+		    return (<div></div>);
 	    return (
 			    <div>
 			    you are a host now . if you close this window you will no longer remain a host .
+			    <Websocket url={strr} onMessage={(data)=>{console.log(data);this.setState({selectedvideo:data});}}/>
+			    {video}
 			    </div>
 			    );
     }
@@ -221,17 +254,21 @@ class becomehost extends Component
 
 class onlinehosts extends Component
 {
+	connection;
         constructor(props)
         {
                 super(props);
+		this.connection="none";
                 this.state={
                         users:[],
 			choice:"none",
+			selectedvideo:"none",
                 };
                 this.getusers=this.getusers.bind(this);
 		this.handledata=this.handledata.bind(this);
                 this.getusers();
 		this.handleclick=this.handleclick.bind(this);
+		this.videoselection=this.videoselection.bind(this);
         }
 
 
@@ -273,6 +310,12 @@ class onlinehosts extends Component
 		console.log("ko");
 		this.setState({choice:uname});
 	}
+	videoselection(videoid)
+	{console.log(videoid);
+		if(this.connection!="none")
+		{this.connection.send(JSON.stringify({'videoid':videoid , 'user':this.state.choice }));
+		this.setState({selectedvideo:videoid});}
+	}
 	render()
 	{
                 var list1=(Object.values(this.state.users)).map(
@@ -297,6 +340,21 @@ class onlinehosts extends Component
 				);
 		}else
 		{
+			var video;
+			if(this.state.selectedvideo=="none")
+			{
+				video="";
+			}
+			else
+			{
+				video= <iframe src={'http://youtube.com/embed/'+this.state.selectedvideo+"?autoplay=1"}></iframe>
+console.log(video);
+			}
+			console.log("hidhhihf")
+			console.log(this.connection);
+			if(this.connection=="none"){
+			this.connection=new WebSocket('ws://127.0.0.1:8000/stream/videoplayer/?'+this.state.choice);
+			console.log("yi");}
 			return (
 					<div className="divv">
 					<div style={hdiv} >
@@ -305,7 +363,8 @@ class onlinehosts extends Component
                                 </div>
 			       <button onClick={(e)=>{e.preventDefault();this.setState({choice:"none"})}}>back</button>	
 					connected to {this.state.choice}
-					<br/><Youtubesearcher/>
+					<br/><Youtubesearcher videoselection={this.videoselection}/>
+					{video}
 					</div>
 			       );
 		}
@@ -335,7 +394,7 @@ class Youtubesearcher extends Component
 		return (
 		<div>
 		<SearchBar onSearchTermChange={searchTerm => this.onInputChange(searchTerm)}/> 
-		<VideoList videos={this.state.videos} onVideoSelect={userSelected=> console.log(userSelected)}/>
+		<VideoList videos={this.state.videos} onVideoSelect={userSelected=>{ console.log(userSelected); this.props.videoselection(userSelected['id']['videoId']);}}/>
 		</div>
 		 );
 	}

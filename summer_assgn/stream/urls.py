@@ -12,5 +12,5 @@ urlpatterns=[
         path('makehost/',makehost,name='makehost'),
         path('removehost/',removehost,name='removehost'),
         path('onlineusersapi/',onlineusersapi,name='onlineusersapi'),
-
+        path('getusername/',getusername,name='getusername'),
         ]
