@@ -1,4 +1,4 @@
-from django.contrib.auth import views,login as loginu, authenticate
+from django.contrib.auth import logout as logoutt,views,login as loginu, authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.shortcuts import render, redirect
@@ -16,6 +16,8 @@ from stream.models import hosts
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 def signup(request):
+    if request.user.is_authenticated :
+        return redirect('stream:home2')
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -29,11 +31,18 @@ def signup(request):
     else:
         form = UserCreationForm()
     return render(request, 'stream/signup.html', {'form': form})
-
+def logout(request):
+    if request.user.is_authenticated :
+        logoutt(request)
+    return redirect('stream:home')
 def home(request):
+    if request.user.is_authenticated :
+                return redirect('stream:home2')
     return render(request,'stream/home.html')
 
 def login(request):
+    if request.user.is_authenticated :
+                return redirect('stream:home2')
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
@@ -49,6 +58,8 @@ def login(request):
     return render(request, 'stream/login.html', {'form': form})
 
 def home2(request):
+    if request.user.is_authenticated==False:
+        return redirect('stream:home')
     return render(request,'stream/home2.html')
 
 @method_decorator(csrf_exempt)
@@ -121,8 +132,12 @@ def onlineusersapi(request):
 
 @method_decorator(csrf_exempt)
 def getusername(request):
-    j=json.loads(request.body);
-    ssid=j['sessionid']
-    s=SessionStore(session_key=ssid)
-    return JsonResponse({'username' : s['username']},safe=False)
-
+    try:
+        j=json.loads(request.body);
+        ssid=j['sessionid']
+        s=SessionStore(session_key=ssid)
+        if 'username' not in s.keys(): 
+            return JsonResponse({'username':"none"})
+        return JsonResponse({'username' : s['username']},safe=False)
+    except ValueError:
+        return redirect('stream:home')

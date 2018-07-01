@@ -13,4 +13,5 @@ urlpatterns=[
         path('removehost/',removehost,name='removehost'),
         path('onlineusersapi/',onlineusersapi,name='onlineusersapi'),
         path('getusername/',getusername,name='getusername'),
+        path('logout/',logout,name='logout'),
         ]

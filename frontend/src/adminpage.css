@@ -7,7 +7,7 @@ body
         align-items:center;
 
 }
-iframe
+ReactPlayer
 {
 	width:80vw;
 	height:50vh

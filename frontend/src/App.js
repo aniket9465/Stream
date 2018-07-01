@@ -1,11 +1,38 @@
 import React, { Component } from 'react';
 import './App.css';
 import YTSearch from 'youtube-api-search';
+import ReactPlayer from 'react-player';
 import {BrowserRouter as Router,Route} from 'react-router-dom'
 import './adminpage.css';
 import VideoList from './video_list'
 import Websocket from 'react-websocket';
 class App extends Component {
+  constructor(props)
+  {
+	  super(props);
+	  var myData={
+                         sessionid:getCookie('sessionid')
+                        };
+             fetch('http://127.0.0.1:8000/stream/getusername/',
+                             {
+                                   method: "post",
+                                   credentials: "same-origin",
+                                   headers: {
+                                                 "X-CSRFToken": getCookie("csrftoken"),
+                                                 "Accept": "application/json",
+                                                 "Content-Type": "application/json"
+                                            },
+                                   body: JSON.stringify(myData)
+                              }
+                   ).then(response => response.json() )
+                    .then(json => {  console.log(json);
+			    if(json['username']=="none")
+			    {
+				    window.location="http://127.0.0.1:8000/stream/home/"
+			    }
+                                  });
+ 
+  }
   render() {
     return ( 
       <Router>
@@ -237,7 +264,7 @@ class becomehost extends Component
                         }
                         else
                         {       
-                                video= <iframe src={'http://youtube.com/embed/'+this.state.selectedvideo+"?autoplay=1"}></iframe>}
+                                video= <ReactPlayer url={'http://youtube.com/embed/'+this.state.selectedvideo+"?autoplay=1"} playing />;}
 	    console.log(strr);
 	    console.log(this.state.username);
 	    if(this.state.username=="none")
@@ -347,7 +374,7 @@ class onlinehosts extends Component
 			}
 			else
 			{
-				video= <iframe src={'http://youtube.com/embed/'+this.state.selectedvideo+"?autoplay=1"}></iframe>
+				video= <ReactPlayer url={'http://youtube.com/embed/'+this.state.selectedvideo+"?autoplay=1"} playing />
 console.log(video);
 			}
 			console.log("hidhhihf")
