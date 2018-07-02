@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import YTSearch from 'youtube-api-search';
+import Videoplayer from './videoplayer'
 import ReactPlayer from 'react-player';
 import {BrowserRouter as Router,Route} from 'react-router-dom'
 import './adminpage.css';
@@ -191,9 +192,10 @@ class becomehost extends Component
     {
 	    super(props);
 	    var tthis=this;
+	    this.connection="none"
 	    window.onbeforeunload=function(e){tthis.componentWillUnmount();};
             window.onunload=function(e){tthis.componentWillUnmount();};
-            this.state={username:"none",selectedvideo:"none"};
+            this.state={username:"none",selectedvideo:"none",playing:true,volume:0.8,played:0};
 	    var myData={
                          sessionid:getCookie('sessionid')
                         };
@@ -209,7 +211,7 @@ class becomehost extends Component
                                    body: JSON.stringify(myData)
                               }
                    ).then(response => response.json() )
-                    .then(json => {  console.log(json);
+                    .then(json => { 
                                     this.setState({username:json['username']});
                                   });
    
@@ -217,14 +219,9 @@ class becomehost extends Component
     componentDidMount()
     {
 	    var a=getCookie('sessionid');
-	    console.log(a);
-	    console.log("whay");
-	    console.log(window.onbeforeunload);
-	    console.log(window.onunload);
      var myData={
                          sessionid:getCookie("sessionid")
                         };
-            console.log(myData); 
      fetch('http://127.0.0.1:8000/stream/makehost/',
                              {
                                    method: "post",
@@ -242,7 +239,6 @@ class becomehost extends Component
    componentWillUnmount()
     {
 	    window.location.reload();
-	    alert("wait");
      var myData={        
                          sessionid:getCookie('sessionid')
                         };
@@ -257,22 +253,28 @@ class becomehost extends Component
  
     render()
     {       var strr='ws://127.0.0.1:8000/stream/videoplayer/?'+this.state.username;
+	    if(this.connection=="none" && this.state.username!="none"){
+		    this.connection=new WebSocket(strr);
+	   this.connection.onmessage=(data)=>{ var obj=JSON.parse(data['data']);this.setState({selectedvideo:obj['videoid'],playing:obj['playing'],
+		                                volume:obj['volume'],played:obj['played']});
+	                                };
+
+	    }
 	    var video;
 	    if(this.state.selectedvideo=="none")
                         {       
                                 video="";
                         }
                         else
-                        {       
-                                video= <ReactPlayer url={'http://youtube.com/embed/'+this.state.selectedvideo+"?autoplay=1"} playing />;}
-	    console.log(strr);
-	    console.log(this.state.username);
+                        {
+				 video= <div><Videoplayer choice={this.state.username} videoid={this.state.selectedvideo} url={'http://youtube.com/embed/'+this.state.selectedvideo+"?autoplay=1"} playing={this.state.playing} connection={this.connection} volume={this.state.volume} played={this.state.played}  /></div> ;
+
+			}	
 	    if(this.state.username=="none")
 		    return (<div></div>);
 	    return (
 			    <div>
 			    you are a host now . if you close this window you will no longer remain a host .
-			    <Websocket url={strr} onMessage={(data)=>{console.log(data);this.setState({selectedvideo:data});}}/>
 			    {video}
 			    </div>
 			    );
@@ -290,6 +292,9 @@ class onlinehosts extends Component
                         users:[],
 			choice:"none",
 			selectedvideo:"none",
+			playing:true,
+			volume:0.8,
+			played:0,
                 };
                 this.getusers=this.getusers.bind(this);
 		this.handledata=this.handledata.bind(this);
@@ -317,31 +322,28 @@ class onlinehosts extends Component
                                    body: JSON.stringify(myData)
                               }
                    ).then(response => response.json() )
-                    .then(json => { console.log(json);
-			    console.log(this.state.choice);
+                    .then(json => {
 			            if(typeof json.find(item=>item.uname==this.state.choice)=='undefined')
-				    {console.log("set to none"); this.setState({users:json,choice:"none"});
-				    }else{console.log("why come here");
+				    {this.setState({users:json,choice:"none"});
+				    }else{
 					    this.setState({users:json});}
                                   });
         }
 	
 	handledata(data)
 	{
-                console.log(data);
 		this.getusers();
 	}
 	handleclick(uname,e)
 	{
 		e.preventDefault();
-		console.log("ko");
 		this.setState({choice:uname});
 	}
 	videoselection(videoid)
-	{console.log(videoid);
+	{
 		if(this.connection!="none")
-		{this.connection.send(JSON.stringify({'videoid':videoid , 'user':this.state.choice }));
-		this.setState({selectedvideo:videoid});}
+		{this.connection.send(JSON.stringify({'videoid':videoid ,'playing':true,'volume':0.8,'played':0 ,'user':this.state.choice }));
+		this.setState({selectedvideo:videoid,playing:true,played:0});}
 	}
 	render()
 	{
@@ -350,9 +352,6 @@ class onlinehosts extends Component
                                 return <button onClick={(e)=>{this.handleclick(varia['uname'],e)}}> {varia['uname']}</button>;
                                 });
 		var hdiv={ display:"none" };
-		console.log(this.state.users.find(item=> item.uname==this.state.choice));
-		console.log(this.state.choice);
-		console.log(this.state.users);
 		if(typeof this.state.users.find(item=> item.uname==this.state.choice) == 'undefined')
 		{
 			return (
@@ -374,14 +373,17 @@ class onlinehosts extends Component
 			}
 			else
 			{
-				video= <ReactPlayer url={'http://youtube.com/embed/'+this.state.selectedvideo+"?autoplay=1"} playing />
-console.log(video);
+				video= <div><Videoplayer choice={this.state.choice} videoid={this.state.selectedvideo} url={'http://youtube.com/embed/'+this.state.selectedvideo+"?autoplay=1"} connection={this.connection} playing={this.state.playing} volume={this.state.volume} played={this.state.played}  /></div> ;
 			}
-			console.log("hidhhihf")
-			console.log(this.connection);
 			if(this.connection=="none"){
 			this.connection=new WebSocket('ws://127.0.0.1:8000/stream/videoplayer/?'+this.state.choice);
-			console.log("yi");}
+			this.connection.onmessage=evt=>{
+				var obj=JSON.parse(evt.data);
+				console.log(obj);
+			this.setState({selectedvideo:obj['videoid'],playing:obj['playing'],
+			                            volume:obj['volume'],played:obj['played']})
+			}
+			}
 			return (
 					<div className="divv">
 					<div style={hdiv} >
@@ -413,11 +415,11 @@ class Youtubesearcher extends Component
 	onInputChange(strr)
         {
                 YTSearch({key:"AIzaSyDSyUd2d2t_S6mHNtIQDvEjDeUyikhHumk",term:strr},
-                                (data)=> {console.log(data);this.setState({videos:data})}
+                                (data)=> {this.setState({videos:data})}
                                 );
         }
 	render()
-	{console.log(this.state.search);
+	{
 		return (
 		<div>
 		<SearchBar onSearchTermChange={searchTerm => this.onInputChange(searchTerm)}/> 

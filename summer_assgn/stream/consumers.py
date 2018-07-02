@@ -9,14 +9,11 @@ class onlinehosts(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_add)("onlineuserrequest",self.channel_name)
         self.send(text_data="hello")
     def disconnect(self,close_code):
-        print(self.channel_layer)
         async_to_sync(self.channel_layer.group_discard)("onlineuserrequest",self.channel_name)
-        print(self.channel_layer)
         pass
     def receive(self):
         pass
     def sendrefresh(self,event):
-        print("hiii")
         self.send(text_data=event["text"])
         pass
 
@@ -24,8 +21,6 @@ class videoplayer(WebsocketConsumer):
     def connect(self):
         self.accept()
         username=str(self.scope['query_string'],"utf-8")
-        print(username)
-        pprint(self.scope)
         async_to_sync(self.channel_layer.group_add)(username,self.channel_name)
     def disconnect(self,close_code):
         username=str(self.scope['query_string'],"utf-8")
@@ -33,9 +28,8 @@ class videoplayer(WebsocketConsumer):
         pass
     def receive(self,text_data):
         data=json.loads(text_data)
-        async_to_sync(self.channel_layer.group_send)(data['user'],{'type':'sendvideoid','text':data['videoid']})
+        async_to_sync(self.channel_layer.group_send)(data['user'],{'type':'sendvideoid','text':data['videoid'],'playing':data['playing'],'volume':data['volume'],'played':data['played']})
         pass
     def sendvideoid(self,event):
-        self.send(text_data=event['text'])
-        print(event)
+        self.send(text_data=json.dumps({'videoid':event['text'],'playing':event['playing'],'volume':event['volume'],'played':event['played']}))
         pass

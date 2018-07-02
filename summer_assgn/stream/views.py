@@ -51,7 +51,6 @@ def login(request):
             user = authenticate(username=username, password=raw_password)
             loginu(request,user)
             request.session['username']=username
-            print(request.session['username'])
             return redirect('stream:home2')
     else:
         form = AuthenticationForm()
@@ -67,9 +66,7 @@ def adminpageapi(request):
     j=json.loads(request.body);
     ssid=j['sessionid']
     s=SessionStore(session_key=ssid)
-    print(s['username'])
     serializer=userserializer(User.objects.all().filter(~Q(username=s['username'])),many=True)
-    print(serializer.data)
     return JsonResponse(serializer.data,safe=False)
 
 @method_decorator(csrf_exempt)
@@ -79,7 +76,6 @@ def approveuserapi(request):
     user=User.objects.get(username=uname)
     user.is_active=True
     user.save()
-    print(user)
     return HttpResponse('')
 
 @method_decorator(csrf_exempt)
@@ -88,7 +84,6 @@ def deleteuserapi(request):
     uname=j['uname']
     user=User.objects.get(username=uname)
     user.delete()
-    print("hi")
     return HttpResponse('')
 
 @method_decorator(csrf_exempt)
@@ -100,23 +95,19 @@ def makehost(request):
         h1=hosts(uname=s['username'])
         h1.save()
         channel_layer=get_channel_layer()
-        print(channel_layer)
         async_to_sync(channel_layer.group_send)("onlineuserrequest",{'type':'sendrefresh','text':"hello"})
     return HttpResponse('')
 
 @method_decorator(csrf_exempt)
 def removehost(request):
-    print("wtf")
     j=json.loads(request.body);
     ssid=j['sessionid']
     s=SessionStore(session_key=ssid)
     while True:
         try:
             h1=hosts.objects.get(uname=s['username'])
-            print(h1)
             h1.delete()
             channel_layer=get_channel_layer()
-            print(channel_layer)
             async_to_sync(channel_layer.group_send)("onlineuserrequest",{'type':'sendrefresh','text':"hello"})
             break;
         except ValueError:
@@ -126,7 +117,6 @@ def removehost(request):
 @method_decorator(csrf_exempt)
 def onlineusersapi(request):
     serializer=onlinehostsserializer(hosts.objects.all(),many=True)
-    print(serializer.data)
     return JsonResponse(serializer.data,safe=False)
 
 

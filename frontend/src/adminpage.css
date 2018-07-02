@@ -7,10 +7,19 @@ body
         align-items:center;
 
 }
+section
+{
+	width:80vw;
+	height:60vh;
+}
 ReactPlayer
 {
 	width:80vw;
 	height:50vh
+}
+.player-wrapper
+{
+	height:70%;
 }
 .divv
 {
