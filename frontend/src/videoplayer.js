@@ -15,6 +15,7 @@ super(props);
 this.f=0;
 this.paused=0;
   this.state = {
+    muteme:false,
     url: props.url,
     choice:props.choice,
     videoid:props.videoid,
@@ -113,7 +114,7 @@ this.paused=0;
               height='100%'
               url={url}
               playing={playing}
-              volume={volume}
+              volume={this.state.muteme?parseFloat(0):volume}
               onReady={() => console.log('onReady')}
               onStart={() => console.log('onStart')}
               onPlay={this.onPlay}
@@ -159,6 +160,10 @@ this.paused=0;
               <th>Loaded</th>
               <td><progress max={1} value={loaded} /></td>
             </tr>
+	    <tr>
+	    <th>mute me</th>
+	    <td><input type="checkbox" onClick={(e)=>{console.log(e.target.checked);this.setState({muteme:e.target.checked})}}/></td>
+	    </tr>
           </tbody></table>
         </section>
       </div>
