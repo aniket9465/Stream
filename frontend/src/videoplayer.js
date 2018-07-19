@@ -4,7 +4,7 @@ import { hot } from 'react-hot-loader'
 import screenfull from 'screenfull'
 import './adminpage.css'
 import './App.css'
-
+import YoutubePlayer from 'react-youtube-player'
 import ReactPlayer from 'react-player'
 import Duration from './Duration'
 
@@ -101,6 +101,7 @@ this.paused=0;
 		  this.f=0;
 		  this.state.connection.send(JSON.stringify({'videoid':this.state.videoid ,'playing':this.state.playing,'volume':this.state.volume,'played':parseFloat(this.state.played) ,'user':this.state.choice }));
 	  }
+	  console.log(this.state.url);
     const { url, playing, volume, played, loaded, duration } = this.state
     const SEPARATOR = ' · '
     return (
@@ -112,10 +113,10 @@ this.paused=0;
               className='react-player'
               width='100%'
               height='100%'
-              url={url}
+              url={this.state.url}
+	      origin=""
               playing={playing}
               volume={this.state.muteme?parseFloat(0):parseFloat(volume)}
-              onReady={() => console.log('onReady')}
               onStart={() => console.log('onStart')}
               onPlay={this.onPlay}
               onPause={this.onPause}

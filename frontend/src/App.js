@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import searchYouTube from 'youtube-api-search'
 import YTSearch from 'youtube-api-search';
 import Videoplayer from './videoplayer'
 import ReactPlayer from 'react-player';
@@ -14,7 +15,7 @@ class App extends Component {
 	  var myData={
                          sessionid:getCookie('sessionid')
                         };
-             fetch('http://127.0.0.1:8000/stream/getusername/',
+             fetch('http://localhost:8000/stream/getusername/',
                              {
                                    method: "post",
                                    credentials: "same-origin",
@@ -29,7 +30,7 @@ class App extends Component {
                     .then(json => {  console.log(json);
 			    if(json['username']=="none")
 			    {
-				    window.location="http://127.0.0.1:8000/stream/home/"
+				    window.location="http://localhost:8000/stream/home/"
 			    }
                                   });
  
@@ -83,7 +84,7 @@ class adminpage extends Component
              var myData={
                          sessionid:getCookie('sessionid')
                         };
-	     fetch('http://127.0.0.1:8000/stream/adminpageapi/',
+	     fetch('http://localhost:8000/stream/adminpageapi/',
                              {
                                    method: "post",
                                    credentials: "same-origin",
@@ -108,7 +109,7 @@ class adminpage extends Component
                          uname:uname
                         };
 
-              fetch('http://127.0.0.1:8000/stream/deleteuserapi/',
+              fetch('http://localhost:8000/stream/deleteuserapi/',
                              {
                                    method: "post",
                                    credentials: "same-origin",
@@ -133,7 +134,7 @@ class adminpage extends Component
                          uname:uname
                         };
 
-             fetch('http://127.0.0.1:8000/stream/approveuserapi/',
+             fetch('http://localhost:8000/stream/approveuserapi/',
                              {
                                    method: "post",
                                    credentials: "same-origin",
@@ -199,7 +200,7 @@ class becomehost extends Component
 	    var myData={
                          sessionid:getCookie('sessionid')
                         };
-             fetch('http://127.0.0.1:8000/stream/getusername/',
+             fetch('http://localhost:8000/stream/getusername/',
                              {
                                    method: "post",
                                    credentials: "same-origin",
@@ -222,7 +223,7 @@ class becomehost extends Component
      var myData={
                          sessionid:getCookie("sessionid")
                         };
-     fetch('http://127.0.0.1:8000/stream/makehost/',
+     fetch('http://localhost:8000/stream/makehost/',
                              {
                                    method: "post",
                                    credentials: "same-origin",
@@ -242,7 +243,7 @@ class becomehost extends Component
      var myData={        
                          sessionid:getCookie('sessionid')
                         };
-      fetch('http://127.0.0.1:8000/stream/removehost/',
+      fetch('http://localhost:8000/stream/removehost/',
                              {
                                    method: "post",
                                    body: JSON.stringify(myData)
@@ -252,7 +253,7 @@ class becomehost extends Component
     }
  
     render()
-    {       var strr='ws://127.0.0.1:8000/stream/videoplayer/?'+this.state.username;
+    {       var strr='ws://localhost:8000/stream/videoplayer/?'+this.state.username;
 	    if(this.connection=="none" && this.state.username!="none"){
 		    this.connection=new WebSocket(strr);
 	   this.connection.onmessage=(data)=>{ var obj=JSON.parse(data['data']);this.setState({selectedvideo:obj['videoid'],playing:obj['playing'],
@@ -267,7 +268,7 @@ class becomehost extends Component
                         }
                         else
                         {
-				 video= <div><Videoplayer choice={this.state.username} videoid={this.state.selectedvideo} url={'http://youtube.com/embed/'+this.state.selectedvideo+"?autoplay=1"} playing={this.state.playing} connection={this.connection} volume={this.state.volume} played={this.state.played}  /></div> ;
+				 video= <div><Videoplayer choice={this.state.username} videoid={this.state.selectedvideo} url={'https://youtube.com/watch?v='+this.state.selectedvideo} playing={this.state.playing} connection={this.connection} volume={this.state.volume} played={this.state.played}  /></div> ;
 
 			}	
 	    if(this.state.username=="none")
@@ -310,7 +311,7 @@ class onlinehosts extends Component
              var myData={
                          sessionid:getCookie('sessionid')
                         };
-             fetch('http://127.0.0.1:8000/stream/onlineusersapi/',
+             fetch('http://localhost:8000/stream/onlineusersapi/',
                              {
                                    method: "post",
                                    credentials: "same-origin",
@@ -358,7 +359,7 @@ class onlinehosts extends Component
 				
 				<div>
 				<div style={hdiv} >
-			        <Websocket url="ws://127.0.0.1:8000/stream/onlinehosts/" 
+			        <Websocket url="ws://localhost:8000/stream/onlinehosts/" 
 				onMessage={(data)=> {this.handledata(data)}}/>
 				</div>
 				{list1}
@@ -373,10 +374,10 @@ class onlinehosts extends Component
 			}
 			else
 			{
-				video= <div><Videoplayer choice={this.state.choice} videoid={this.state.selectedvideo} url={'http://youtube.com/embed/'+this.state.selectedvideo+"?autoplay=1"} connection={this.connection} playing={this.state.playing} volume={this.state.volume} played={this.state.played}  /></div> ;
+				video= <div><Videoplayer choice={this.state.choice} videoid={this.state.selectedvideo} url={'https://youtube.com/v/'+this.state.selectedvideo} connection={this.connection} playing={this.state.playing} volume={this.state.volume} played={this.state.played}  /></div> ;
 			}
 			if(this.connection=="none"){
-			this.connection=new WebSocket('ws://127.0.0.1:8000/stream/videoplayer/?'+this.state.choice);
+			this.connection=new WebSocket('ws://localhost:8000/stream/videoplayer/?'+this.state.choice);
 			this.connection.onmessage=evt=>{
 				var obj=JSON.parse(evt.data);
 				console.log(obj);
@@ -387,7 +388,7 @@ class onlinehosts extends Component
 			return (
 					<div className="divv">
 					<div style={hdiv} >
-                                <Websocket url="ws://127.0.0.1:8000/stream/onlinehosts/"
+                                <Websocket url="ws://localhost:8000/stream/onlinehosts/"
                                 onMessage={(data)=> {this.handledata(data)}}/>
                                 </div>
 			       <button onClick={(e)=>{e.preventDefault();this.setState({choice:"none"})}}>back</button>	
@@ -414,7 +415,7 @@ class Youtubesearcher extends Component
 	}
 	onInputChange(strr)
         {
-                YTSearch({key:"AIzaSyDSyUd2d2t_S6mHNtIQDvEjDeUyikhHumk",term:strr},
+               searchYouTube({key:"AIzaSyC8Ga_Sq2z0eeTZPYDHZd5ii5RQxgmXOVM",term:strr},
                                 (data)=> {this.setState({videos:data})}
                                 );
         }
