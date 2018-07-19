@@ -114,7 +114,7 @@ this.paused=0;
               height='100%'
               url={url}
               playing={playing}
-              volume={this.state.muteme?parseFloat(0):volume}
+              volume={this.state.muteme?parseFloat(0):parseFloat(volume)}
               onReady={() => console.log('onReady')}
               onStart={() => console.log('onStart')}
               onPlay={this.onPlay}
